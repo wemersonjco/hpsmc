@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGDM - HPSMC - Sistema de Geração de Documentos Médicos</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iOCIgZmlsbD0iIzI1NjNlYiIvPgogIDxwYXRoIGQ9Ik0yNCAyMGg0djI0aC00ek0zNiAyMGg0djI0aC00ek0yMCAyOGgyNHY0aC0yNHoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==" type="image/svg+xml">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           CSS Variables & Reset
+        ======================================== */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #dbeafe;
+            --secondary-color: #64748b;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --background-color: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --input-border: #cbd5e1;
+            --input-focus: #2563eb;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --transition-speed: 0.2s;
+        }
+
+        /* Dark Mode Variables */
+        .dark-mode {
+            --background-color: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --input-border: #475569;
+            --primary-light: #1e3a5f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 14px;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        /* ========================================
+           Login Screen
+        ======================================== */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+
+        .login-card {
+            background-color: white;
+            width: 400px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 24px;
+        }
+
+        .login-logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.3);
+        }
+
+        .login-logo-icon svg {
+            width: 48px;
+            height: 48px;
+            fill: white;
+        }
+
+        .login-title {
+            color: #1e293b;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-group {
+            position: relative;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button.loading {
+            background: #94a3b8;
+            cursor: default;
+        }
+
+        .login-button.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: white;
+            top: calc(50% - 10px);
+            right: 20px;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-error {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 12px;
+            display: none;
+            padding: 10px;
+            background: #fef2f2;
+            border-radius: 8px;
+        }
+
+        .system-info {
+            margin-top: 32px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+        }
+
+        /* ========================================
+           Main Layout
+        ======================================== */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .sidebar-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .sidebar-logo-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .nav-item.active svg {
+            fill: white;
+        }
+
+        .sidebar-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        .logout-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-button:hover {
+            background-color: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        .logout-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 32px;
+        }
+
+        /* Forms Container */
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .form-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .form-card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-card-title svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 16px;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            transition: all 0.2s;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        /* Formatting Toolbar */
+        .formatting-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background-color: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .formatting-toolbar + textarea {
+            border-radius: 0 0 10px 10px;
+        }
+
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--card-bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            height: 24px;
+            background-color: var(--border-color);
+            margin: 0 4px;
+        }
+
+        .toolbar-select {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--card-bg);
+            font-size: 13px;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        /* Add Button */
+        .add-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-button:hover {
+            background-color: #16a34a;
+            transform: translateY(-1px);
+        }
+
+        .add-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        /* OUTROS Tab */
+        .outros-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .outros-button {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .outros-button:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .outros-button-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .outros-button-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .outros-button-content {
+            flex: 1;
+        }
+
+        .outros-button-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .outros-button-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* ========================================
+           Document Output
+        ======================================== */
+        #documentoGerado {
+            display: none;
+            background-color: white;
+            padding: 2cm;
+            margin: 20px auto;
+            max-width: 21cm;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #000;
+        }
+
+        .document-header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 11pt;
+        }
+
+        .document-header-line {
+            margin: 2px 0;
+        }
+
+        .document-title {
+            text-align: center;
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 20px 0 15px;
+            text-transform: uppercase;
+        }
+
+        .document-content {
+            text-align: justify;
+            margin-bottom: 20px;
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+
+        .document-date {
+            text-align: right;
+            margin: 25px 0 10px;
+            font-size: 10pt;
+        }
+
+        .document-signature {
+            text-align: center;
+            margin-top: 40px;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        .document-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #ccc;
+            font-size: 9pt;
+            color: #666;
+        }
+
+        /* ID Boxes for Controlled Prescription */
+        .emitente-box {
+            border: 1px solid #000;
+            padding: 10px;
+            font-size: 10pt;
+            text-align: center;
+            float: right;
+            width: 220px;
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .id-boxes {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 40px;
+            clear: both;
+        }
+
+        .comprador-box,
+        .fornecedor-box {
+            border: 1px solid #000;
+            padding: 10px;
+            font-size: 10pt;
+            width: 48%;
+        }
+
+        /* ========================================
+           Print Styles
+        ======================================== */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            html, body {
+                background: white !important;
+                font-size: 10pt;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 100% !important;
+                overflow: visible !important;
+            }
+
+            /* Esconder tudo exceto o documento gerado */
+            .login-overlay,
+            #loginScreen,
+            .app-container,
+            #appContainer {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                position: absolute !important;
+                left: -9999px !important;
+            }
+
+            #documentoGerado {
+                display: flex !important;
+                flex-direction: column !important;
+                visibility: visible !important;
+                position: relative !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                max-width: none !important;
+                font-size: 10pt;
+                line-height: 1.4;
+                background: white !important;
+                min-height: calc(297mm - 4cm) !important; /* Altura A4 menos margens */
+                height: calc(297mm - 4cm) !important;
+            }
+
+            #documentoGerado .document-header {
+                font-size: 11pt;
+                margin-bottom: 20px;
+                flex-shrink: 0;
+            }
+
+            #documentoGerado .document-title {
+                font-size: 12pt;
+                margin: 20px 0 15px;
+                flex-shrink: 0;
+            }
+
+            #documentoGerado .document-content {
+                font-size: 10pt;
+                line-height: 1.4;
+                margin-bottom: 20px;
+                flex-grow: 0;
+                flex-shrink: 0;
+            }
+
+            #documentoGerado .id-boxes {
+                flex-shrink: 0;
+            }
+
+            #documentoGerado .document-date {
+                font-size: 10pt;
+                margin: 25px 0 10px;
+                text-align: right;
+                flex-shrink: 0;
+            }
+
+            #documentoGerado .document-signature {
+                font-size: 10pt;
+                margin-top: 30px;
+                flex-shrink: 0;
+            }
+
+            #documentoGerado .document-footer {
+                font-size: 9pt;
+                padding-top: 15px;
+                margin-top: auto !important; /* Empurra o rodapé para baixo */
+                border-top: 1px solid #ccc;
+                flex-shrink: 0;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 2cm;
+            }
+        }
+
+        /* ========================================
+           Utilities
+        ======================================== */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-logo-text,
+            .nav-item span,
+            .user-details {
+                display: none;
+            }
+
+            .sidebar-header {
+                padding: 16px;
+                display: flex;
+                justify-content: center;
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========================================
+         Login Screen
+    ======================================== -->
+    <div id="loginScreen" class="login-overlay">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="login-logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H6v-2h4V7h2v4h4v2h-4v4z"/>
+                    </svg>
+                </div>
+                <h1 class="login-title">HPSMC</h1>
+                <p class="login-subtitle">Sistema de Geração de Documentos Médicos</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="loginUsername">Usuário</label>
+                    <input type="text" id="loginUsername" placeholder="Digite seu usuário" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" placeholder="Digite sua senha" autocomplete="off">
+                </div>
+                <button type="button" id="loginButton" class="login-button" onclick="verificarLogin()">
+                    Entrar
+                </button>
+                <div id="loginError" class="login-error">Usuário ou senha incorretos.</div>
+            </div>
+        </div>
+        
+        <div class="system-info">
+            SGDM v2.0 | Hospital e Pronto Socorro Municipal de Cuiabá<br>
+            © 2025 Secretaria Municipal de Saúde
+        </div>
+    </div>
+
+    <!-- ========================================
+         Main Application
+    ======================================== -->
+    <div id="appContainer" class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H6v-2h4V7h2v4h4v2h-4v4z"/>
+                        </svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        <span class="sidebar-logo-title">HPSMC</span>
+                        <span class="sidebar-logo-subtitle">Cirurgia Geral</span>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Documentos</div>
+                
+                <div class="nav-item" data-tab="receita" onclick="mostrarDocumento('receita')">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    <span>Receita Médica</span>
+                </div>
+                
+                <div class="nav-item" data-tab="receita_controlada" onclick="mostrarDocumento('receita_controlada')">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    <span>Receituário Controlado</span>
+                </div>
+                
+                <div class="nav-item" data-tab="atestado" onclick="mostrarDocumento('atestado')">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                    <span>Atestado Médico</span>
+                </div>
+                
+                <div class="nav-item" data-tab="atestado_acompanhante" onclick="mostrarDocumento('atestado_acompanhante')">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    <span>Atestado Acompanhante</span>
+                </div>
+                
+                <div class="nav-item" data-tab="encaminhamento" onclick="mostrarDocumento('encaminhamento')">
+                    <svg viewBox="0 0 24 24"><path d="M15 4v7H5.17L4 12.17V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg>
+                    <span>Encaminhamento</span>
+                </div>
+                
+                <div class="nav-item" data-tab="relatorio" onclick="mostrarDocumento('relatorio')">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 14H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
+                    <span>Relatório Médico</span>
+                </div>
+                
+                <div class="nav-item" data-tab="solicitacao_exames" onclick="mostrarDocumento('solicitacao_exames')">
+                    <svg viewBox="0 0 24 24"><path d="M7 14l5-5 5 5H7z"/><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+                    <span>Solicitação de Exames</span>
+                </div>
+                
+                <div class="nav-item" data-tab="orientacoes" onclick="mostrarDocumento('orientacoes')">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    <span>Orientações</span>
+                </div>
+                
+                <div class="nav-item" data-tab="outros" onclick="mostrarDocumento('outros')">
+                    <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+                    <span>Outros</span>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">HP</div>
+                    <div class="user-details">
+                        <div class="user-name">HPSMC</div>
+                        <div class="user-role">Cirurgia Geral</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="header-title" id="headerTitle">Receita Médica</h1>
+                <div class="header-actions">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+                        <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                    </button>
+                    <button class="logout-button" onclick="fazerLogout()">
+                        <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor"/></svg>
+                        Sair
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Patient Info Card (Shared) -->
+                <div class="form-card" id="patientInfoCard">
+                    <div class="form-card-title">
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        Identificação do Paciente
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="patientName">Nome do Paciente</label>
+                            <input type="text" id="patientName" placeholder="Digite o nome completo do paciente">
+                        </div>
+                        <div class="form-group" id="cpfGroup">
+                            <label for="patientCPF">CPF do Paciente</label>
+                            <input type="text" id="patientCPF" placeholder="000.000.000-00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="patientAddress">Endereço do Paciente</label>
+                            <input type="text" id="patientAddress" placeholder="Rua, Número, Bairro, Cidade - UF">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receita Médica -->
+                <div class="form-container" id="receitaForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                            Detalhes da Receita
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="viaAdministracao">Via de Administração</label>
+                                <select id="viaAdministracao">
+                                    <option value="">Selecione...</option>
+                                    <option value="Uso Oral">USO ORAL</option>
+                                    <option value="Uso Intramuscular">USO INTRAMUSCULAR</option>
+                                    <option value="Uso Endovenoso">USO ENDOVENOSO</option>
+                                    <option value="Uso Tópico">USO TÓPICO</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="medicamentos">Medicações</label>
+                                <select id="medicamentos">
+                                    <option value="">Selecione...</option>
+                                    <option value="DIPIRONA 1G - TOMAR 01 CP DE 6/6H POR 02 DIAS E APÓS SE DOR">DIPIRONA 1G</option>
+                                    <option value="NIMESULIDA 100 MG - TOMAR 01 CP DE 12/12H POR 03 DIAS">NIMESULIDA 100 MG</option>
+                                    <option value="ONDANSETRONA 8 MG - TOMAR 01 CP DE 8/8H SE NÁUSEAS OU VÔMITOS">ONDANSETRONA 8 MG</option>
+                                    <option value="OMEPRAZOL 20 MG - TOMAR 01 CP PELA MANHÃ EM JEJUM POR 28 DIAS">OMEPRAZOL 20 MG</option>
+                                    <option value="CIPROFLOXACINO 500 MG - TOMAR 01 CP DE 12/12H POR 7 DIAS">CIPROFLOXACINO 500 MG</option>
+                                    <option value="METRONIDAZOL 400 MG - TOMAR 01 CP DE 8/8H POR 7 DIAS">METRONIDAZOL 400 MG</option>
+                                    <option value="ADDERA D3 OU SANY D 50.000 UI - TOMAR 01 CP POR SEMANA POR 4 MESES">ADDERA D3 OU SANY D 50.000 UI</option>
+                                    <option value="ANNITA - TOMAR 01 CP DE 12/12H POR 03 DIAS">ANNITA</option>
+                                    <option value="CIPRO OU FORITUS 500 MG - TOMAR 01 CP DE 12/12H POR 7 DIAS">CIPRO OU FORITUS 500 MG</option>
+                                    <option value="CITOBÊ OU CRONOBÊ COMPLEX 5000 UI - APLICAR 01 AMP IM PROFUNDO A CADA 30 DIAS">CITOBÊ OU CRONOBÊ COMPLEX 5000 UI</option>
+                                    <option value="DIVENA OU INILOK - TOMAR 01 CP EM JEJUM POR 8 SEMANAS">DIVENA OU INILOK</option>
+                                    <option value="FLAGYL OU METRONIDAZOL 400 MG - TOMAR 01 CP DE 8/8H POR 7 DIAS">FLAGYL OU METRONIDAZOL 400 MG</option>
+                                    <option value="FLORATIL 200 MG - TOMAR 01 CP DE 12/12H POR 05 DIAS">FLORATIL 200 MG</option>
+                                    <option value="INZELM - TOMAR 01 CP EM JEJUM POR 8 SEMANAS">INZELM</option>
+                                    <option value="KEFLEX 1G - TOMAR 01 CP DE 12/12H POR 7 DIAS">KEFLEX 1G</option>
+                                    <option value="LACTOSIL 10.000 FCC - DISSOLVER 01 SACHE EM AGUA E TOMAR ANTES DE INGERIR PRODUTOS LACTEOS">LACTOSIL 10.000 FCC</option>
+                                    <option value="MACRODANTINA - TOMAR 01 CP DE 6/6H POR 7 DIAS">MACRODANTINA</option>
+                                    <option value="MATERNA OU DAMATER OU BARIAT XR OU BARISTAR - TOMAR 01 CP APÓS O CAFÉ DA MANHÃ">MATERNA OU DAMATER OU BARIAT XR OU BARISTAR</option>
+                                    <option value="MECOBE OU DOZEMAST 1000 MCG - TOMAR 01 CP AO DIA">MECOBE OU DOZEMAST 1000 MCG</option>
+                                    <option value="MONURIL - DISSOLVER EM UM COPO COM ÁGUA E TOMAR EM DOSE UNICA ANTES DE DORMIR">MONURIL</option>
+                                    <option value="NAUTEX ODG 8 MG - COLOCAR O CONTEUDO DE UM SACHE NA LINGUA DE 8/8H SE NAUSEAS OU VOMITOS">NAUTEX ODG 8 MG</option>
+                                    <option value="NEUTROFER 500 MG - TOMAR 01 CP ANTES DO ALMOÇO E JANTAR POR 60 DIAS">NEUTROFER 500 MG</option>
+                                    <option value="NORIPURUM 100 MG/5ML - 8 AMPOLAS - Diluir 02 ampolas em 200ml de SF0,9% e administrar intravenoso em 1 hora, em dias alternados">NORIPURUM 100 MG/5ML</option>
+                                    <option value="PANTOGAR - TOMAR 01 CP 3X AO DIA POR 03 MESES">PANTOGAR</option>
+                                    <option value="PERIDAL - TOMAR 01 CP ANTES DO ALMOÇO E JANTAR POR 30 DIAS">PERIDAL</option>
+                                    <option value="CALDE MDK OU PROSSO KM OU OSTEONUTRI OU PEROSTEO KM - TOMAR 01 CP APÓS O ALMOÇO OU JANTAR">CALDE MDK OU PROSSO KM OU OSTEONUTRI OU PEROSTEO KM</option>
+                                    <option value="SUCRAFILM - TOMAR 01 SACHÊ ANTES DO CAFÉ DA MANHA E JANTAR POR 15 DIAS">SUCRAFILM</option>
+                                    <option value="TACITA - TOMAR 01 CP AO DIA POR 03 MESES">TACITA</option>
+                                    <option value="TORAGESIC - TOMAR 01 CP SUBLINGUAL DE 12/12H POR 03 DIAS">TORAGESIC</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <button type="button" class="add-button" onclick="adicionarMedicamento()">
+                                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
+                                Adicionar Medicamento
+                            </button>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="modelosReceita">Textos pré-definidos</label>
+                                <select id="modelosReceita" onchange="selecionarModeloReceita()">
+                                    <option value="">Selecione um modelo...</option>
+                                    <option value="pos_op_hernia">PÓS OP HERNIA</option>
+                                    <option value="pos_op_vesicula">PÓS OP VESÍCULA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="receitaText">Conteúdo do Receituário</label>
+                            <div class="formatting-toolbar">
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('receitaText', 'bold')" title="Negrito"><strong>B</strong></button>
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('receitaText', 'italic')" title="Itálico"><em>I</em></button>
+                                <div class="toolbar-separator"></div>
+                                <select class="toolbar-select" onchange="alterarTamanhoFonte('receitaText', this.value)">
+                                    <option value="">Normal</option>
+                                    <option value="10">10pt</option>
+                                    <option value="12">12pt</option>
+                                    <option value="14">14pt</option>
+                                </select>
+                            </div>
+                            <textarea id="receitaText" placeholder="Digite o conteúdo da receita aqui..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receituário Controlado -->
+                <div class="form-container" id="receitaControladaForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                            Detalhes do Receituário Controlado
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="viaAdministracaoControlada">Via de Administração</label>
+                                <select id="viaAdministracaoControlada">
+                                    <option value="">Selecione...</option>
+                                    <option value="Uso Oral">USO ORAL</option>
+                                    <option value="Uso Intramuscular">USO INTRAMUSCULAR</option>
+                                    <option value="Uso Endovenoso">USO ENDOVENOSO</option>
+                                    <option value="Uso Tópico">USO TÓPICO</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="medicamentosControlados">Medicações</label>
+                                <select id="medicamentosControlados">
+                                    <option value="">Selecione...</option>
+                                    <option value="CIPROFLOXACINO 500 MG - TOMAR 01 CP DE 12/12H POR 7 DIAS">CIPROFLOXACINO 500 MG</option>
+                                    <option value="METRONIDAZOL 400 MG - TOMAR 01 CP DE 8/8H POR 7 DIAS">METRONIDAZOL 400 MG</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <button type="button" class="add-button" onclick="adicionarMedicamentoControlado()">
+                                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
+                                Adicionar Medicamento
+                            </button>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="modelosReceitaControlada">Textos pré-definidos</label>
+                                <select id="modelosReceitaControlada" onchange="selecionarModeloReceitaControlada()">
+                                    <option value="">Selecione um modelo...</option>
+                                    <option value="cipro_metro">CIPRO E METRO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="receitaControladaText">Conteúdo do Receituário</label>
+                            <div class="formatting-toolbar">
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('receitaControladaText', 'bold')" title="Negrito"><strong>B</strong></button>
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('receitaControladaText', 'italic')" title="Itálico"><em>I</em></button>
+                                <div class="toolbar-separator"></div>
+                                <select class="toolbar-select" onchange="alterarTamanhoFonte('receitaControladaText', this.value)">
+                                    <option value="">Normal</option>
+                                    <option value="10">10pt</option>
+                                    <option value="12">12pt</option>
+                                    <option value="14">14pt</option>
+                                </select>
+                            </div>
+                            <textarea id="receitaControladaText" placeholder="Digite o conteúdo do receituário controlado aqui..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Atestado Médico -->
+                <div class="form-container" id="atestadoForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                            Detalhes do Atestado
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="modelosAtestado">Textos pré-definidos</label>
+                                <select id="modelosAtestado" onchange="selecionarModeloAtestado()">
+                                    <option value="">Selecione um modelo...</option>
+                                    <option value="atestado_consulta">ATESTADO CONSULTA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="atestadoText">Conteúdo do Atestado</label>
+                            <div class="formatting-toolbar">
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('atestadoText', 'bold')" title="Negrito"><strong>B</strong></button>
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('atestadoText', 'italic')" title="Itálico"><em>I</em></button>
+                                <div class="toolbar-separator"></div>
+                                <select class="toolbar-select" onchange="alterarTamanhoFonte('atestadoText', this.value)">
+                                    <option value="">Normal</option>
+                                    <option value="10">10pt</option>
+                                    <option value="12">12pt</option>
+                                    <option value="14">14pt</option>
+                                </select>
+                            </div>
+                            <textarea id="atestadoText">Atesto, para os devidos fins, que o(a) Sr.(a) supracitado(a) foi submetido(a) a tratamento cirúrgico, necessitando ausentar-se de suas atividades laborais por um período de 30 (TRINTA) dias, a contar de [data de internação].
+
+Grato.
+
+CID: Z988</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Atestado Acompanhante -->
+                <div class="form-container" id="atestadoAcompanhanteForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                            Detalhes do Atestado de Acompanhante
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="nomeAcompanhante">Nome do Acompanhante</label>
+                                <input type="text" id="nomeAcompanhante" placeholder="Digite o nome do acompanhante" oninput="atualizarNomeAcompanhante()">
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="atestadoAcompanhanteText">Conteúdo do Atestado</label>
+                            <div class="formatting-toolbar">
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('atestadoAcompanhanteText', 'bold')" title="Negrito"><strong>B</strong></button>
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('atestadoAcompanhanteText', 'italic')" title="Itálico"><em>I</em></button>
+                                <div class="toolbar-separator"></div>
+                                <select class="toolbar-select" onchange="alterarTamanhoFonte('atestadoAcompanhanteText', this.value)">
+                                    <option value="">Normal</option>
+                                    <option value="10">10pt</option>
+                                    <option value="12">12pt</option>
+                                    <option value="14">14pt</option>
+                                </select>
+                            </div>
+                            <textarea id="atestadoAcompanhanteText">Atesto para os devidos fins que o(a) [NOME_ACOMPANHANTE] esteve como acompanhante do(a) paciente supracitado(a) em consulta médica nesta data.
+
+CID: Z763</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Encaminhamento -->
+                <div class="form-container" id="encaminhamentoForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M15 4v7H5.17L4 12.17V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg>
+                            Detalhes do Encaminhamento
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="encaminhamentoText">Conteúdo do Encaminhamento</label>
+                            <div class="formatting-toolbar">
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('encaminhamentoText', 'bold')" title="Negrito"><strong>B</strong></button>
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('encaminhamentoText', 'italic')" title="Itálico"><em>I</em></button>
+                                <div class="toolbar-separator"></div>
+                                <select class="toolbar-select" onchange="alterarTamanhoFonte('encaminhamentoText', this.value)">
+                                    <option value="">Normal</option>
+                                    <option value="10">10pt</option>
+                                    <option value="12">12pt</option>
+                                    <option value="14">14pt</option>
+                                </select>
+                            </div>
+                            <textarea id="encaminhamentoText" placeholder="Digite o conteúdo do encaminhamento aqui..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relatório Médico -->
+                <div class="form-container" id="relatorioForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 14H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1s-.45 1-1 1zm0-4H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
+                            Detalhes do Relatório Médico
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="relatorioText">Conteúdo do Relatório</label>
+                            <div class="formatting-toolbar">
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('relatorioText', 'bold')" title="Negrito"><strong>B</strong></button>
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('relatorioText', 'italic')" title="Itálico"><em>I</em></button>
+                                <div class="toolbar-separator"></div>
+                                <select class="toolbar-select" onchange="alterarTamanhoFonte('relatorioText', this.value)">
+                                    <option value="">Normal</option>
+                                    <option value="10">10pt</option>
+                                    <option value="12">12pt</option>
+                                    <option value="14">14pt</option>
+                                </select>
+                            </div>
+                            <textarea id="relatorioText" placeholder="Digite o conteúdo do relatório médico aqui..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Solicitação de Exames -->
+                <div class="form-container" id="solicitacaoExamesForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M7 14l5-5 5 5H7z"/><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+                            Detalhes da Solicitação de Exames
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="examesSelect">Exames Disponíveis</label>
+                                <select id="examesSelect">
+                                    <option value="">Selecione um exame...</option>
+                                    <option value="40202615 - ENDOSCOPIA DIGESTIVA ALTA COM BIOPSIA E TESTE DE UREASE (PESQUISA HELICOBACTER PYLORI)">40202615 - ENDOSCOPIA DIGESTIVA ALTA COM BIOPSIA E TESTE DE UREASE</option>
+                                    <option value="40901122 - US - ABDOME TOTAL (ABDOME SUPERIOR, RINS, BEXIGA, AORTA, VEIA CAVA INFERIOR E ADRENAIS)">40901122 - US - ABDOME TOTAL</option>
+                                    <option value="40901203 - US - ORGAOS SUPERFICIAIS (TIREOIDE OU ESCROTO OU PENIS OU CRANIO)">40901203 - US - ORGAOS SUPERFICIAIS</option>
+                                    <option value="40901483 - DOPPLER COLORIDO VENOSO DE MEMBRO INFERIOR - UNILATERAL">40901483 - DOPPLER COLORIDO VENOSO DE MEMBRO INFERIOR - UNILATERAL</option>
+                                    <option value="40901548 - DOPPLER CONVENCIONAL ORGAO/ESTRUTURA ISOLADA">40901548 - DOPPLER CONVENCIONAL ORGAO/ESTRUTURA ISOLADA</option>
+                                    <option value="40201082 - COLONOSCOPIA (INCLUI A RETOSSIGMOIDOSCOPIA)">40201082 - COLONOSCOPIA</option>
+                                    <option value="40201104 - ECOENDOSCOPIA ALTA">40201104 - ECOENDOSCOPIA ALTA</option>
+                                    <option value="40808130 - DENSITOMETRIA OSSEA - ROTINA: COLUNA E FEMUR (OU DOIS SEGMENTOS)">40808130 - DENSITOMETRIA OSSEA - ROTINA</option>
+                                    <option value="41301048 - BIOIMPEDANCIOMETRIA (AMBULATORIAL) EXAME">41301048 - BIOIMPEDANCIOMETRIA</option>
+                                    <option value="41101359 - HIDRO-RM (COLANGIO-RM OU URO-RM OU MIELO-RM OU SIALO-RM OU CISTOGRAFIA POR RM)">41101359 - HIDRO-RM</option>
+                                    <option value="40202240 - ECOENDOSCOPIA COM PUNCAO POR AGULHA">40202240 - ECOENDOSCOPIA COM PUNCAO POR AGULHA</option>
+                                    <option value="40805026 - RX - TORAX - 2 INCIDENCIAS">40805026 - RX - TORAX - 2 INCIDENCIAS</option>
+                                    <option value="40101010 - ECG CONVENCIONAL DE ATE 12 DERIVACOES">40101010 - ECG CONVENCIONAL DE ATE 12 DERIVACOES</option>
+                                    <option value="40105075 - PROVA DE FUNCAO PULMONAR COMPLETA (OU ESPIROMETRIA)">40105075 - PROVA DE FUNCAO PULMONAR COMPLETA</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="align-self: flex-end;">
+                                <button type="button" class="add-button" onclick="adicionarExame()">
+                                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/></svg>
+                                    Adicionar Exame
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="examesText">Lista de Exames</label>
+                            <div class="formatting-toolbar">
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('examesText', 'bold')" title="Negrito"><strong>B</strong></button>
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('examesText', 'italic')" title="Itálico"><em>I</em></button>
+                                <div class="toolbar-separator"></div>
+                                <select class="toolbar-select" onchange="alterarTamanhoFonte('examesText', this.value)">
+                                    <option value="">Normal</option>
+                                    <option value="10">10pt</option>
+                                    <option value="12">12pt</option>
+                                    <option value="14">14pt</option>
+                                </select>
+                            </div>
+                            <textarea id="examesText">HEMOGRAMA;
+UREIA;
+ACIDO URICO;
+HEMOGLOBINA GLICADA;
+CREATININA;
+LIPIDOGRAMA;
+PROVAS DE FUNÇÃO HEPÁTICA;
+TSH;
+T4 LIVRE;
+ROTINA DE URINA;
+25 OHD;
+VITAMINA B12;
+FERRO;
+FERRITINA.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orientações -->
+                <div class="form-container" id="orientacoesForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                            Detalhes das Orientações
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="orientacoesText">Conteúdo das Orientações</label>
+                            <div class="formatting-toolbar">
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('orientacoesText', 'bold')" title="Negrito"><strong>B</strong></button>
+                                <button type="button" class="toolbar-btn" onclick="aplicarFormatacao('orientacoesText', 'italic')" title="Itálico"><em>I</em></button>
+                                <div class="toolbar-separator"></div>
+                                <select class="toolbar-select" onchange="alterarTamanhoFonte('orientacoesText', this.value)">
+                                    <option value="">Normal</option>
+                                    <option value="10">10pt</option>
+                                    <option value="12">12pt</option>
+                                    <option value="14">14pt</option>
+                                </select>
+                            </div>
+                            <textarea id="orientacoesText" placeholder="Digite as orientações aqui..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outros -->
+                <div class="form-container" id="outrosForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+                            Documentos Adicionais
+                        </div>
+                        <p style="color: var(--text-secondary); margin-bottom: 24px;">Selecione um dos documentos abaixo:</p>
+                        <div class="outros-container">
+                            <a href="https://wemersonjco.github.io/AIH/" class="outros-button" target="_blank">
+                                <div class="outros-button-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H6v-2h4V7h2v4h4v2h-4v4z"/></svg>
+                                </div>
+                                <div class="outros-button-content">
+                                    <div class="outros-button-title">Autorização de Internação Hospitalar (AIH)</div>
+                                    <div class="outros-button-description">Formulário para solicitação de internação hospitalar</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doctor Info Card (Shared) -->
+                <div class="form-card" id="doctorInfoCard">
+                    <div class="form-card-title">
+                        <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>
+                        Dados do Médico (opcional)
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="doctorData">Informações para assinatura</label>
+                        <textarea id="doctorData" rows="3" placeholder="Ex: Dr. João Silva&#10;CIRURGIA GERAL&#10;CRM MT 12345"></textarea>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons no-print" id="actionButtons">
+                    <button type="button" class="btn btn-primary" onclick="gerarDocumento()">
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z" fill="currentColor"/></svg>
+                        Gerar Documento
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/></svg>
+                        Limpar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="imprimirDocumento()">
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" fill="currentColor"/></svg>
+                        Imprimir
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================
+         Document Output (for printing)
+    ======================================== -->
+    <div id="documentoGerado">
+        <div class="document-header">
+            <div class="document-header-line">SECRETARIA MUNICIPAL DE SAÚDE DE CUIABÁ</div>
+            <div class="document-header-line">HOSPITAL E PRONTO SOCORRO MUNICIPAL DE CUIABÁ</div>
+            <div class="document-header-line">CLÍNICA CIRÚRGICA</div>
+        </div>
+        
+        <h2 id="documentTitle" class="document-title"></h2>
+        
+        <div id="documentContent" class="document-content"></div>
+        
+        <div id="idBoxes" class="id-boxes"></div>
+        
+        <p id="documentDate" class="document-date"></p>
+        
+        <p id="documentSignature" class="document-signature"></p>
+        
+        <div class="document-footer">
+            Av. Gen. Valle, 192 - Bandeirantes, Cuiabá - MT, 78010-010<br>
+            Telefone: (65) 3617-7801
+        </div>
+    </div>
+
+    <!-- ========================================
+         JavaScript
+    ======================================== -->
+    <script>
+        // ========================================
+        // Global Variables
+        // ========================================
+        let tipoDocumentoAtual = 'receita';
+        let isDarkMode = false;
+
+        // Pre-defined text models
+        const modelosTexto = {
+            receita: {
+                pos_op_hernia: `USO ORAL
+
+1. DIPIRONA 1G
+TOMAR 01 CP DE 6/6H POR 02 DIAS E APÓS TOMAR 01 CP DE 6/6H SE TIVER DOR.
+
+2. NIMESULIDA 100 MG
+TOMAR 01 CP DE 12/12H POR 03 DIAS.
+
+3. ONDANSETRONA 8 MG
+TOMAR 01 CP DE 8/8H SE TIVER NÁUSEAS OU VÔMITOS.
+
+4. OMEPRAZOL 20 MG
+TOMAR 01 CP PELA MANHÃ EM JEJUM POR 28 DIAS.
+
+ORIENTAÇÕES:
+* LAVAR FERIDA COM ÁGUA E SABÃO. PASSAR ÁLCOOL 70º.
+* PODE DEIXAR A FERIDA ABERTA EM CASA.
+* RETIRAR OS PONTOS EM 15 DIAS NA UNIDADE BÁSICA DE SAÚDE.
+* BEBER BASTANTE ÁGUA ATÉ A URINA FICAR CLARA.
+* AGENDAR RETORNO NO AMBULATÓRIO DE CIRURGIA GERAL EM 10-15 DIAS.
+* NÃO REALIZAR ESFORÇO FÍSICO POR 60 DIAS.`,
+                
+                pos_op_vesicula: `USO ORAL
+
+1. DIPIRONA 1G
+TOMAR 01 CP DE 6/6H POR 02 DIAS E APÓS TOMAR 01 CP DE 6/6H SE TIVER DOR.
+
+2. NIMESULIDA 100 MG
+TOMAR 01 CP DE 12/12H POR 03 DIAS.
+
+3. ONDANSETRONA 8 MG
+TOMAR 01 CP DE 8/8H SE TIVER NÁUSEAS OU VÔMITOS.
+
+4. OMEPRAZOL 20 MG
+TOMAR 01 CP PELA MANHÃ EM JEJUM POR 28 DIAS.
+
+ORIENTAÇÕES:
+* LAVAR FERIDA COM ÁGUA E SABÃO. PASSAR ÁLCOOL 70º.
+* PODE DEIXAR A FERIDA ABERTA EM CASA.
+* RETIRAR OS PONTOS EM 15 DIAS NA UNIDADE BÁSICA DE SAÚDE.
+* BEBER BASTANTE ÁGUA ATÉ A URINA FICAR CLARA.
+* AGENDAR RETORNO NO AMBULATÓRIO DE CIRURGIA GERAL EM 10-15 DIAS.
+* NÃO REALIZAR ESFORÇO FÍSICO POR 60 DIAS.
+* PEGAR RESULTADO DA BIÓPSIA DA VESÍCULA (ANATOMOPATOLÓGICO) NO LABORATÓRIO E LEVAR NA CONSULTA DE RETORNO OU NO POSTO DE SAÚDE.`
+            },
+            receita_controlada: {
+                cipro_metro: `USO ORAL
+
+1. CIPROFLOXACINO 500 MG
+TOMAR 01 CP DE 12/12H POR 7 DIAS.
+
+2. METRONIDAZOL 400 MG
+TOMAR 01 CP DE 8/8H POR 7 DIAS.`
+            },
+            atestado: {
+                atestado_consulta: `Atesto, para os devidos fins, que o(a) paciente supracitado(a) esteve em consulta médica nesta data.
+
+CID: Z00`
+            }
+        };
+
+        // ========================================
+        // Login Functions
+        // ========================================
+        function verificarLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginError = document.getElementById('loginError');
+            const loginButton = document.getElementById('loginButton');
+
+            loginButton.classList.add('loading');
+            loginButton.disabled = true;
+
+            setTimeout(() => {
+                if (username === 'HPSMC' && password === 'hpsmc@123') {
+                    document.getElementById('loginScreen').style.opacity = 0;
+                    setTimeout(() => {
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('appContainer').style.display = 'block';
+                        mostrarDocumento('receita');
+                    }, 400);
+                    sessionStorage.setItem('sgdmHPSMCLoggedIn', 'true');
+                } else {
+                    loginError.style.display = 'block';
+                    loginButton.classList.remove('loading');
+                    loginButton.disabled = false;
+                    document.getElementById('loginUsername').focus();
+                    setTimeout(() => {
+                        loginError.style.display = 'none';
+                    }, 3000);
+                }
+            }, 600);
+        }
+
+        function fazerLogout() {
+            sessionStorage.removeItem('sgdmHPSMCLoggedIn');
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('loginScreen').style.opacity = 1;
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginButton').classList.remove('loading');
+            document.getElementById('loginButton').disabled = false;
+        }
+
+        // ========================================
+        // Theme Toggle
+        // ========================================
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            const themeIcon = document.getElementById('themeIcon');
+            if (isDarkMode) {
+                themeIcon.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+            } else {
+                themeIcon.innerHTML = '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
+            }
+            localStorage.setItem('sgdmHPSMCDarkMode', isDarkMode);
+        }
+
+        // ========================================
+        // Navigation Functions
+        // ========================================
+        function mostrarDocumento(tipo) {
+            tipoDocumentoAtual = tipo;
+
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.tab === tipo) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Update header title
+            const titles = {
+                'receita': 'Receita Médica',
+                'receita_controlada': 'Receituário Controlado',
+                'atestado': 'Atestado Médico',
+                'atestado_acompanhante': 'Atestado de Acompanhante',
+                'encaminhamento': 'Encaminhamento',
+                'relatorio': 'Relatório Médico',
+                'solicitacao_exames': 'Solicitação de Exames',
+                'orientacoes': 'Orientações',
+                'outros': 'Outros Documentos'
+            };
+            document.getElementById('headerTitle').textContent = titles[tipo] || 'Documento';
+
+            // Mapeamento de tipos para IDs de formulários
+            const formIds = {
+                'receita': 'receitaForm',
+                'receita_controlada': 'receitaControladaForm',
+                'atestado': 'atestadoForm',
+                'atestado_acompanhante': 'atestadoAcompanhanteForm',
+                'encaminhamento': 'encaminhamentoForm',
+                'relatorio': 'relatorioForm',
+                'solicitacao_exames': 'solicitacaoExamesForm',
+                'orientacoes': 'orientacoesForm',
+                'outros': 'outrosForm'
+            };
+
+            // Hide all form containers
+            document.querySelectorAll('.form-container').forEach(form => {
+                form.classList.remove('active');
+            });
+
+            // Show the selected form
+            const formId = formIds[tipo];
+            const form = document.getElementById(formId);
+            if (form) {
+                form.classList.add('active');
+            }
+
+            // Show/hide CPF field based on document type
+            const cpfGroup = document.getElementById('cpfGroup');
+            if (tipo === 'receita_controlada') {
+                cpfGroup.style.display = 'block';
+            } else {
+                cpfGroup.style.display = 'none';
+            }
+
+            // Show/hide doctor info and action buttons
+            const doctorCard = document.getElementById('doctorInfoCard');
+            const actionButtons = document.getElementById('actionButtons');
+            if (tipo === 'outros') {
+                doctorCard.style.display = 'none';
+                actionButtons.style.display = 'none';
+            } else {
+                doctorCard.style.display = 'block';
+                actionButtons.style.display = 'flex';
+            }
+        }
+
+        // ========================================
+        // Form Functions
+        // ========================================
+        function adicionarMedicamento() {
+            const select = document.getElementById('medicamentos');
+            const textarea = document.getElementById('receitaText');
+            if (select.selectedIndex > 0) {
+                const values = select.value.split(' - ');
+                const medicamento = values[0];
+                const modoUso = values.length > 1 ? values[1] : '';
+                textarea.value += `${medicamento}\n${modoUso}\n\n`;
+                select.selectedIndex = 0;
+            }
+        }
+
+        function adicionarMedicamentoControlado() {
+            const select = document.getElementById('medicamentosControlados');
+            const textarea = document.getElementById('receitaControladaText');
+            if (select.selectedIndex > 0) {
+                const values = select.value.split(' - ');
+                const medicamento = values[0];
+                const modoUso = values.length > 1 ? values[1] : '';
+                textarea.value += `${medicamento}\n${modoUso}\n\n`;
+                select.selectedIndex = 0;
+            }
+        }
+
+        function adicionarExame() {
+            const select = document.getElementById('examesSelect');
+            const textarea = document.getElementById('examesText');
+            if (select.selectedIndex > 0) {
+                textarea.value += `${select.value};\n`;
+                select.selectedIndex = 0;
+            }
+        }
+
+        function atualizarNomeAcompanhante() {
+            const nome = document.getElementById('nomeAcompanhante').value;
+            document.getElementById('atestadoAcompanhanteText').value = 
+                `Atesto para os devidos fins que o(a) ${nome || '[NOME_ACOMPANHANTE]'} esteve como acompanhante do(a) paciente supracitado(a) em consulta médica nesta data.\n\nCID: Z763`;
+        }
+
+        function selecionarModeloReceita() {
+            const modelo = document.getElementById('modelosReceita').value;
+            if (modelo && modelosTexto.receita[modelo]) {
+                document.getElementById('receitaText').value = modelosTexto.receita[modelo];
+            }
+        }
+
+        function selecionarModeloReceitaControlada() {
+            const modelo = document.getElementById('modelosReceitaControlada').value;
+            if (modelo && modelosTexto.receita_controlada[modelo]) {
+                document.getElementById('receitaControladaText').value = modelosTexto.receita_controlada[modelo];
+            }
+        }
+
+        function selecionarModeloAtestado() {
+            const modelo = document.getElementById('modelosAtestado').value;
+            if (modelo && modelosTexto.atestado[modelo]) {
+                document.getElementById('atestadoText').value = modelosTexto.atestado[modelo];
+            }
+        }
+
+        function aplicarFormatacao(textAreaId, tipo) {
+            const textArea = document.getElementById(textAreaId);
+            if (!textArea) return;
+            
+            const start = textArea.selectionStart;
+            const end = textArea.selectionEnd;
+            const selectedText = textArea.value.substring(start, end);
+            
+            if (selectedText) {
+                let tag = tipo === 'bold' ? '<strong>' : '<em>';
+                let closeTag = tipo === 'bold' ? '</strong>' : '</em>';
+                
+                textArea.value = textArea.value.substring(0, start) + 
+                                tag + selectedText + closeTag + 
+                                textArea.value.substring(end);
+                textArea.focus();
+            }
+        }
+
+        function alterarTamanhoFonte(textAreaId, tamanho) {
+            if (!tamanho) return;
+            const textArea = document.getElementById(textAreaId);
+            if (!textArea) return;
+            
+            const start = textArea.selectionStart;
+            const end = textArea.selectionEnd;
+            const selectedText = textArea.value.substring(start, end);
+            
+            if (selectedText) {
+                const tag = `<span style="font-size:${tamanho}pt;">`;
+                const closeTag = '</span>';
+                textArea.value = textArea.value.substring(0, start) + 
+                                tag + selectedText + closeTag + 
+                                textArea.value.substring(end);
+                textArea.focus();
+            }
+        }
+
+        // ========================================
+        // Document Generation
+        // ========================================
+        function gerarDocumento() {
+            const nomePaciente = document.getElementById('patientName').value;
+            const enderecoPaciente = document.getElementById('patientAddress').value;
+            const cpfPaciente = document.getElementById('patientCPF').value;
+            const dadosMedico = document.getElementById('doctorData').value;
+            
+            // Formatar data por extenso
+            const dataAtual = new Date();
+            const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 
+                          'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+            const dataFormatada = `Cuiabá, ${dataAtual.getDate()} de ${meses[dataAtual.getMonth()]} de ${dataAtual.getFullYear()}`;
+
+            const documentTitle = document.getElementById('documentTitle');
+            const documentContent = document.getElementById('documentContent');
+            const documentDate = document.getElementById('documentDate');
+            const documentSignature = document.getElementById('documentSignature');
+            const idBoxes = document.getElementById('idBoxes');
+
+            // Clear previous content
+            documentContent.innerHTML = '';
+            idBoxes.innerHTML = '';
+            documentSignature.innerHTML = '';
+
+            // Set date at the end
+            documentDate.textContent = dataFormatada;
+
+            // Set title based on document type
+            const titles = {
+                'receita': 'RECEITA MÉDICA',
+                'receita_controlada': 'RECEITUÁRIO CONTROLADO',
+                'atestado': 'ATESTADO MÉDICO',
+                'atestado_acompanhante': 'ATESTADO DE ACOMPANHANTE',
+                'encaminhamento': 'ENCAMINHAMENTO',
+                'relatorio': 'RELATÓRIO MÉDICO',
+                'solicitacao_exames': 'SOLICITAÇÃO DE EXAMES',
+                'orientacoes': 'ORIENTAÇÕES'
+            };
+            documentTitle.textContent = titles[tipoDocumentoAtual] || 'DOCUMENTO';
+
+            // Generate content based on document type
+            let conteudo = '';
+            
+            switch(tipoDocumentoAtual) {
+                case 'receita':
+                    const receitaText = document.getElementById('receitaText').value;
+                    conteudo = `<strong>Nome do Paciente:</strong> ${nomePaciente}<br><br>`;
+                    conteudo += receitaText.replace(/\n/g, '<br>');
+                    break;
+                    
+                case 'receita_controlada':
+                    const receitaCtrlText = document.getElementById('receitaControladaText').value;
+                    
+                    // Add emitente box
+                    const emitenteBox = document.createElement('div');
+                    emitenteBox.className = 'emitente-box';
+                    emitenteBox.innerHTML = `
+                        <strong>IDENTIFICAÇÃO DO EMITENTE</strong><br>
+                        Hospital e Pronto Socorro Municipal de Cuiabá<br>
+                        Av. Gen. Valle, 192 - Bandeirantes<br>
+                        Cuiabá - MT, 78010-010<br>
+                        Tel: (65) 3617-7801
+                    `;
+                    documentContent.appendChild(emitenteBox);
+                    
+                    conteudo = `<strong>Nome do Paciente:</strong> ${nomePaciente}<br>`;
+                    conteudo += `<strong>Endereço:</strong> ${enderecoPaciente}<br>`;
+                    if (cpfPaciente) conteudo += `<strong>CPF:</strong> ${cpfPaciente}<br>`;
+                    conteudo += '<br>';
+                    conteudo += receitaCtrlText.replace(/\n/g, '<br>');
+                    
+                    // Add ID boxes
+                    idBoxes.innerHTML = `
+                        <div class="comprador-box">
+                            <strong>IDENTIFICAÇÃO DO COMPRADOR</strong><br>
+                            Nome:<br>
+                            RG:<br>
+                            Endereço:<br>
+                            Telefone:<br>
+                            Cidade e UF:
+                        </div>
+                        <div class="fornecedor-box">
+                            <strong>IDENTIFICAÇÃO DO FORNECEDOR</strong><br>
+                            Data:<br>
+                            Assinatura do Farmacêutico:
+                        </div>
+                    `;
+                    break;
+                    
+                case 'atestado':
+                    const atestadoText = document.getElementById('atestadoText').value;
+                    conteudo = `<strong>Nome do Paciente:</strong> ${nomePaciente}<br><br>`;
+                    conteudo += atestadoText.replace(/\n/g, '<br>');
+                    break;
+                    
+                case 'atestado_acompanhante':
+                    const atestadoAcompText = document.getElementById('atestadoAcompanhanteText').value;
+                    conteudo = `<strong>Nome do Paciente:</strong> ${nomePaciente}<br><br>`;
+                    conteudo += atestadoAcompText.replace(/\n/g, '<br>');
+                    break;
+                    
+                case 'encaminhamento':
+                    const encaminhamentoText = document.getElementById('encaminhamentoText').value;
+                    conteudo = `<strong>Nome do Paciente:</strong> ${nomePaciente}<br><br>`;
+                    conteudo += encaminhamentoText.replace(/\n/g, '<br>');
+                    break;
+                    
+                case 'relatorio':
+                    const relatorioText = document.getElementById('relatorioText').value;
+                    conteudo = `<strong>Nome do Paciente:</strong> ${nomePaciente}<br><br>`;
+                    conteudo += relatorioText.replace(/\n/g, '<br>');
+                    break;
+                    
+                case 'solicitacao_exames':
+                    const examesText = document.getElementById('examesText').value;
+                    conteudo = `<strong>Nome do Paciente:</strong> ${nomePaciente}<br><br>`;
+                    conteudo += examesText.replace(/\n/g, '<br>');
+                    break;
+                    
+                case 'orientacoes':
+                    const orientacoesText = document.getElementById('orientacoesText').value;
+                    conteudo = `<strong>Nome do Paciente:</strong> ${nomePaciente}<br><br>`;
+                    conteudo += orientacoesText.replace(/\n/g, '<br>');
+                    break;
+            }
+
+            // Add content
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = conteudo;
+            documentContent.appendChild(contentDiv);
+
+            // Add signature
+            if (dadosMedico.trim()) {
+                documentSignature.innerHTML = dadosMedico.replace(/\n/g, '<br>');
+            }
+
+            // Show document
+            document.getElementById('documentoGerado').style.display = 'block';
+            
+            // Scroll to document
+            document.getElementById('documentoGerado').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function limparFormulario() {
+            const dadosMedico = document.getElementById('doctorData').value;
+            
+            document.getElementById('patientName').value = '';
+            document.getElementById('patientAddress').value = '';
+            document.getElementById('patientCPF').value = '';
+            document.getElementById('receitaText').value = '';
+            document.getElementById('receitaControladaText').value = '';
+            document.getElementById('atestadoText').value = `Atesto, para os devidos fins, que o(a) Sr.(a) supracitado(a) foi submetido(a) a tratamento cirúrgico, necessitando ausentar-se de suas atividades laborais por um período de 30 (TRINTA) dias, a contar de [data de internação].
+
+Grato.
+
+CID: Z988`;
+            document.getElementById('atestadoAcompanhanteText').value = `Atesto para os devidos fins que o(a) [NOME_ACOMPANHANTE] esteve como acompanhante do(a) paciente supracitado(a) em consulta médica nesta data.
+
+CID: Z763`;
+            document.getElementById('nomeAcompanhante').value = '';
+            document.getElementById('encaminhamentoText').value = '';
+            document.getElementById('relatorioText').value = '';
+            document.getElementById('examesText').value = `HEMOGRAMA;
+UREIA;
+ACIDO URICO;
+HEMOGLOBINA GLICADA;
+CREATININA;
+LIPIDOGRAMA;
+PROVAS DE FUNÇÃO HEPÁTICA;
+TSH;
+T4 LIVRE;
+ROTINA DE URINA;
+25 OHD;
+VITAMINA B12;
+FERRO;
+FERRITINA.`;
+            document.getElementById('orientacoesText').value = '';
+            
+            // Reset selects
+            document.getElementById('modelosReceita').selectedIndex = 0;
+            document.getElementById('modelosReceitaControlada').selectedIndex = 0;
+            document.getElementById('modelosAtestado').selectedIndex = 0;
+            document.getElementById('viaAdministracao').selectedIndex = 0;
+            document.getElementById('viaAdministracaoControlada').selectedIndex = 0;
+            
+            document.getElementById('documentoGerado').style.display = 'none';
+        }
+
+        function imprimirDocumento() {
+            window.print();
+        }
+
+        // ========================================
+        // Initialization
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check saved login (usando sessionStorage - login expira ao fechar navegador)
+            const isLoggedIn = sessionStorage.getItem('sgdmHPSMCLoggedIn') === 'true';
+            if (isLoggedIn) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                mostrarDocumento('receita');
+            }
+
+            // Check saved theme
+            const savedDarkMode = localStorage.getItem('sgdmHPSMCDarkMode') === 'true';
+            if (savedDarkMode) {
+                isDarkMode = true;
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeIcon').innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>';
+            }
+
+            // Enter key for login
+            document.querySelectorAll('.login-form input').forEach(input => {
+                input.addEventListener('keyup', function(e) {
+                    if (e.key === 'Enter') {
+                        verificarLogin();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
