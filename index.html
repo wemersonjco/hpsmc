@@ -699,6 +699,51 @@
             transform: translateY(-2px);
         }
 
+        /* Descrições Cirúrgicas */
+        .descricao-cirurgica-box {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .descricao-cirurgica-texto {
+            font-family: 'Courier New', monospace;
+            font-size: 11pt;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+        }
+
+        .descricao-cirurgica-texto strong {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .descricao-header {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            font-size: 12pt;
+        }
+
+        .descricao-item {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .descricao-item::before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: var(--primary-color);
+        }
+
         /* OUTROS Tab */
         .outros-container {
             display: flex;
@@ -1021,7 +1066,7 @@
         
         <div class="system-info">
             SGDM v2.0 | Hospital e Pronto Socorro Municipal de Cuiabá<br>
-            © 2026 Serviço de Cirurgia Geral
+            © 2025 Secretaria Municipal de Saúde
         </div>
     </div>
 
@@ -1086,6 +1131,11 @@
                 <div class="nav-item" data-tab="orientacoes" onclick="mostrarDocumento('orientacoes')">
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                     <span>Orientações</span>
+                </div>
+                
+                <div class="nav-item" data-tab="descricoes_cirurgicas" onclick="mostrarDocumento('descricoes_cirurgicas')">
+                    <svg viewBox="0 0 24 24"><path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm1 13.5l-1-1 3-3-3-3 1-1 4 4-4 4z"/></svg>
+                    <span>Descrições Cirúrgicas</span>
                 </div>
                 
                 <div class="nav-item" data-tab="outros" onclick="mostrarDocumento('outros')">
@@ -1507,6 +1557,47 @@ FERRITINA.</textarea>
                     </div>
                 </div>
 
+                <!-- Descrições Cirúrgicas -->
+                <div class="form-container" id="descricoesCirurgicasForm">
+                    <div class="form-card">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm1 13.5l-1-1 3-3-3-3 1-1 4 4-4 4z"/></svg>
+                            Descrições Cirúrgicas Padronizadas - HPSMC
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="descricaoCirurgicaSelect">Selecione o Procedimento</label>
+                                <select id="descricaoCirurgicaSelect" onchange="exibirDescricaoCirurgica()">
+                                    <option value="">Selecione um procedimento...</option>
+                                    <option value="hernioplastia_inguinal_direita">Hernioplastia Inguinal Direita (Aberta)</option>
+                                    <option value="hernioplastia_inguinal_esquerda">Hernioplastia Inguinal Esquerda (Aberta)</option>
+                                    <option value="hernioplastia_inguinal_bilateral">Hernioplastia Inguinal Bilateral (Aberta)</option>
+                                    <option value="hernioplastia_umbilical">Hernioplastia Umbilical</option>
+                                    <option value="hernioplastia_incisional">Hernioplastia Incisional</option>
+                                    <option value="hernioplastia_inguinal_video_tapp">Hernioplastia Inguinal Videolaparoscópica Bilateral (TAPP)</option>
+                                    <option value="colecistectomia_aberta">Colecistectomia Aberta</option>
+                                    <option value="colecistectomia_video">Colecistectomia Videolaparoscópica</option>
+                                    <option value="acesso_venoso_subclavia">Acesso Venoso Central - Veia Subclávia</option>
+                                    <option value="acesso_venoso_jugular">Acesso Venoso Central - Veia Jugular Interna</option>
+                                    <option value="traqueostomia">Traqueostomia</option>
+                                    <option value="desbridamento">Desbridamento Cirúrgico</option>
+                                    <option value="gastrostomia_stamm">Gastrostomia à Stamm</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width" id="descricaoCirurgicaContainer" style="display: none;">
+                            <label>Descrição do Procedimento</label>
+                            <div class="descricao-cirurgica-box">
+                                <div id="descricaoCirurgicaTexto" class="descricao-cirurgica-texto"></div>
+                                <button type="button" class="btn btn-primary" onclick="copiarDescricaoCirurgica()" style="margin-top: 15px;">
+                                    <svg viewBox="0 0 24 24" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/></svg>
+                                    Copiar Descrição
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Outros -->
                 <div class="form-container" id="outrosForm">
                     <div class="form-card">
@@ -1743,6 +1834,7 @@ CID: Z00`
                 'relatorio': 'Relatório Médico',
                 'solicitacao_exames': 'Solicitação de Exames',
                 'orientacoes': 'Orientações',
+                'descricoes_cirurgicas': 'Descrições Cirúrgicas',
                 'outros': 'Outros Documentos'
             };
             document.getElementById('headerTitle').textContent = titles[tipo] || 'Documento';
@@ -1757,6 +1849,7 @@ CID: Z00`
                 'relatorio': 'relatorioForm',
                 'solicitacao_exames': 'solicitacaoExamesForm',
                 'orientacoes': 'orientacoesForm',
+                'descricoes_cirurgicas': 'descricoesCirurgicasForm',
                 'outros': 'outrosForm'
             };
 
@@ -1783,7 +1876,7 @@ CID: Z00`
             // Show/hide doctor info and action buttons
             const doctorCard = document.getElementById('doctorInfoCard');
             const actionButtons = document.getElementById('actionButtons');
-            if (tipo === 'outros') {
+            if (tipo === 'outros' || tipo === 'descricoes_cirurgicas') {
                 doctorCard.style.display = 'none';
                 actionButtons.style.display = 'none';
             } else {
@@ -2081,6 +2174,385 @@ FERRITINA.`;
             document.getElementById('viaAdministracaoControlada').selectedIndex = 0;
             
             document.getElementById('documentoGerado').style.display = 'none';
+        }
+
+        // ========================================
+        // Descrições Cirúrgicas
+        // ========================================
+        const descricoesCirurgicas = {
+            hernioplastia_inguinal_direita: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: HERNIOPLASTIA INGUINAL DIREITA (ABERTA)
+
+DESCRIÇÃO:
+
+• Sob anestesia, paciente em decúbito dorsal horizontal
+• Assepsia e antissepsia da região inguinal direita e colocação de campos estéreis
+• Incisão oblíqua em região inguinal direita, seguindo as linhas de força da pele, com aproximadamente 5-6 cm de extensão
+• Dissecção por planos até a aponeurose do músculo oblíquo externo
+• Incisão da aponeurose no sentido de suas fibras, identificando o anel inguinal externo e o canal inguinal
+• Identificação e reparo do funículo espermático
+• Dissecção cuidadosa do saco herniário, com identificação do tipo de hérnia (direta/indireta)
+• Redução do conteúdo herniário para a cavidade abdominal
+• Ligadura alta do saco herniário com fio absorvível
+• Reforço da parede posterior do canal inguinal com colocação de tela de polipropileno
+• Fixação da tela com pontos separados de fio inabsorvível ao ligamento inguinal e aponeurose do músculo oblíquo externo - técnica livre de tensão (Lichtenstein)
+• Revisão da hemostasia
+• Fechamento da aponeurose do oblíquo externo com sutura contínua
+• Aproximação do tecido subcutâneo e síntese da pele com pontos separados
+• Curativo oclusivo estéril`,
+
+            hernioplastia_inguinal_esquerda: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: HERNIOPLASTIA INGUINAL ESQUERDA (ABERTA)
+
+DESCRIÇÃO:
+
+• Sob anestesia, paciente em decúbito dorsal horizontal
+• Assepsia e antissepsia da região inguinal esquerda e colocação de campos estéreis
+• Incisão oblíqua em região inguinal esquerda, seguindo as linhas de força da pele, com aproximadamente 5-6 cm de extensão
+• Dissecção por planos até a aponeurose do músculo oblíquo externo
+• Incisão da aponeurose no sentido de suas fibras, identificando o anel inguinal externo e o canal inguinal
+• Identificação e reparo do funículo espermático
+• Dissecção cuidadosa do saco herniário, com identificação do tipo de hérnia (direta/indireta)
+• Redução do conteúdo herniário para a cavidade abdominal
+• Ligadura alta do saco herniário com fio absorvível
+• Reforço da parede posterior do canal inguinal com colocação de tela de polipropileno
+• Fixação da tela com pontos separados de fio inabsorvível ao ligamento inguinal e aponeurose do músculo oblíquo externo - técnica livre de tensão (Lichtenstein)
+• Revisão da hemostasia
+• Fechamento da aponeurose do oblíquo externo com sutura contínua
+• Aproximação do tecido subcutâneo e síntese da pele com pontos separados
+• Curativo oclusivo estéril`,
+
+            hernioplastia_inguinal_bilateral: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: HERNIOPLASTIA INGUINAL BILATERAL (ABERTA)
+
+DESCRIÇÃO:
+
+• Sob anestesia, paciente em decúbito dorsal horizontal
+• Assepsia e antissepsia da região inguinal bilateral e colocação de campos estéreis
+
+REGIÃO INGUINAL DIREITA:
+• Incisão oblíqua seguindo as linhas de força da pele, com aproximadamente 5-6 cm de extensão
+• Dissecção por planos até a aponeurose do músculo oblíquo externo, incisada no sentido de suas fibras
+• Identificação e reparo do funículo espermático
+• Dissecção do saco herniário, redução do conteúdo e ligadura alta com fio absorvível
+• Colocação de tela de polipropileno com fixação ao ligamento inguinal e aponeurose do oblíquo externo - técnica de Lichtenstein
+• Fechamento por planos
+
+REGIÃO INGUINAL ESQUERDA:
+• Procedimento idêntico realizado à esquerda
+• Incisão oblíqua em região inguinal esquerda, dissecção por planos
+• Identificação do funículo espermático, tratamento do saco herniário
+• Colocação de tela de polipropileno pela técnica de Lichtenstein
+• Revisão da hemostasia bilateral
+• Fechamento das aponeuroses com sutura contínua
+• Aproximação do subcutâneo e síntese da pele com pontos separados bilateralmente
+• Curativos oclusivos estéreis`,
+
+            hernioplastia_umbilical: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: HERNIOPLASTIA UMBILICAL
+
+DESCRIÇÃO:
+
+• Sob anestesia, paciente em decúbito dorsal horizontal
+• Assepsia e antissepsia da região umbilical e colocação de campos estéreis
+• Incisão curvilínea infraumbilical (ou transversa/longitudinal conforme tamanho do defeito)
+• Dissecção por planos com identificação do saco herniário e seu conteúdo
+• Abertura do saco herniário, inventário do conteúdo e redução para a cavidade abdominal
+• Ressecção do saco herniário excedente
+• Identificação e delimitação do anel herniário
+• Para hérnias pequenas (<2cm): fechamento primário do defeito aponeurótico com pontos separados de fio inabsorvível
+• Para hérnias maiores (≥2cm): colocação de tela de polipropileno em posição pré-aponeurótica (onlay) ou retromuscular, fixada com pontos separados de fio inabsorvível
+• Reconstrução da cicatriz umbilical com fixação à aponeurose
+• Revisão da hemostasia
+• Aproximação do tecido subcutâneo com pontos separados
+• Síntese da pele
+• Curativo oclusivo estéril`,
+
+            hernioplastia_incisional: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: HERNIOPLASTIA INCISIONAL
+
+DESCRIÇÃO:
+
+• Sob anestesia, paciente em decúbito dorsal horizontal
+• Assepsia e antissepsia do abdome e colocação de campos estéreis
+• Incisão sobre a cicatriz cirúrgica prévia
+• Dissecção por planos com liberação do tecido cicatricial e identificação do saco herniário
+• Abertura do saco, lise de aderências quando presentes
+• Inventário do conteúdo e redução para a cavidade abdominal
+• Delimitação completa do anel herniário com identificação de suas bordas
+• Ressecção do saco herniário excedente
+• Fechamento do defeito aponeurótico com pontos separados de fio inabsorvível quando possível
+• Colocação de tela de polipropileno em posição pré-aponeurótica (onlay), retromuscular ou intraperitoneal conforme indicação
+• Fixação adequada às margens do defeito utilizando pontos separados de fio inabsorvível
+• Revisão rigorosa da hemostasia
+• Colocação de dreno aspirativo quando indicado
+• Aproximação do tecido subcutâneo
+• Síntese da pele com pontos separados ou sutura intradérmica
+• Curativo oclusivo estéril`,
+
+            hernioplastia_inguinal_video_tapp: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: HERNIOPLASTIA INGUINAL VIDEOLAPAROSCÓPICA BILATERAL (TAPP)
+
+DESCRIÇÃO:
+
+• Sob anestesia geral, paciente em decúbito dorsal horizontal com leve Trendelenburg
+• Assepsia e antissepsia do abdome e colocação de campos estéreis
+• Incisão umbilical e estabelecimento do pneumoperitônio com agulha de Veress
+• Introdução de trocarte de 10mm umbilical e ótica de 30 graus
+• Inventário da cavidade abdominal
+• Inserção de dois trocartes de 5mm nas fossas ilíacas sob visão direta
+• Identificação bilateral dos elementos anatômicos: vasos epigástricos inferiores, ligamento de Cooper, cordão espermático e triângulo das complicações
+
+LADO DIREITO:
+• Incisão do peritônio em arco, aproximadamente 2-3 cm acima do defeito herniário
+• Dissecção do espaço pré-peritoneal com criação de flap peritoneal
+• Identificação e redução do saco herniário
+• Colocação de tela de polipropileno (15x10cm) cobrindo os orifícios miopectíneo, herniário direto e indireto
+• Fixação ao ligamento de Cooper e parede abdominal com tackers absorvíveis
+• Fechamento do flap peritoneal com sutura contínua
+
+LADO ESQUERDO:
+• Procedimento idêntico realizado à esquerda
+• Revisão da hemostasia e desinsuflação do pneumoperitônio
+• Síntese das incisões por planos
+• Curativos oclusivos estéreis`,
+
+            colecistectomia_aberta: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: COLECISTECTOMIA ABERTA
+
+DESCRIÇÃO:
+
+• Sob anestesia geral, paciente em decúbito dorsal horizontal
+• Assepsia e antissepsia do abdome e colocação de campos estéreis
+• Incisão subcostal direita (Kocher) ou mediana supraumbilical
+• Abertura da cavidade abdominal por planos
+• Inventário da cavidade
+• Identificação da vesícula biliar e exposição do triângulo hepatocístico (de Calot)
+• Dissecção cuidadosa do ducto cístico e artéria cística, obtendo-se a visão crítica de segurança
+• Ligadura da artéria cística com fio inabsorvível e secção entre ligaduras
+• Ligadura do ducto cístico com fio inabsorvível (ou clipagem), após certificação de ausência de cálculos no interior do ducto
+• Secção do ducto cístico
+• Colecistectomia retrógrada com dissecção da vesícula do leito hepático utilizando eletrocautério
+• Revisão da hemostasia do leito vesicular
+• Revisão da cavidade abdominal e colocação de dreno quando indicado
+• Contagem de compressas
+• Fechamento da parede abdominal por planos com fio adequado
+• Síntese da pele
+• Curativo oclusivo estéril`,
+
+            colecistectomia_video: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: COLECISTECTOMIA VIDEOLAPAROSCÓPICA
+
+DESCRIÇÃO:
+
+• Sob anestesia geral, paciente em decúbito dorsal horizontal com proclive e lateralização esquerda
+• Assepsia e antissepsia do abdome e colocação de campos estéreis
+• Incisão umbilical e estabelecimento do pneumoperitônio com agulha de Veress (ou técnica aberta)
+• Inserção de trocarte de 10mm umbilical e ótica de 30 graus
+• Inventário da cavidade abdominal
+• Inserção dos trocartes acessórios: 10mm epigástrico, 5mm em flanco direito e 5mm em hipocôndrio direito sob visão direta
+• Preensão do fundo vesicular e tração cefálica
+• Preensão do infundíbulo vesicular e tração lateral
+• Dissecção do triângulo hepatocístico com identificação do ducto cístico e artéria cística, obtendo-se a visão crítica de segurança
+• Clipagem e secção da artéria cística
+• Clipagem e secção do ducto cístico
+• Colecistectomia retrógrada com dissecção da vesícula do leito hepático utilizando hook ou espátula com eletrocautério
+• Revisão da hemostasia do leito vesicular
+• Extração da vesícula através da incisão umbilical (utilizando endobag quando necessário)
+• Revisão da cavidade e desinsuflação do pneumoperitônio
+• Síntese das incisões por planos
+• Curativos oclusivos estéreis`,
+
+            acesso_venoso_subclavia: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: ACESSO VENOSO CENTRAL - VEIA SUBCLÁVIA
+
+DESCRIÇÃO:
+
+• Sob anestesia local com sedação consciente
+• Paciente em decúbito dorsal horizontal com coxim interescapular e Trendelenburg de 15 graus
+• Cabeça rodada para o lado contralateral
+• Assepsia e antissepsia da região infraclavicular e colocação de campos estéreis
+• Infiltração anestésica local no ponto de punção (junção do terço medial com o terço lateral da clavícula)
+• Punção da veia subclávia pela técnica de Seldinger
+• Introdução da agulha em direção à fúrcula esternal, mantendo ângulo raso com a parede torácica, imediatamente abaixo da clavícula
+• Confirmação do acesso venoso pela aspiração de sangue
+• Introdução do fio-guia através da agulha
+• Retirada da agulha mantendo o fio-guia
+• Pequena incisão de pele no local de entrada
+• Dilatação do trajeto com dilatador sobre o fio-guia
+• Introdução do cateter venoso central sobre o fio-guia
+• Retirada do fio-guia
+• Confirmação do posicionamento pela aspiração de sangue em todas as vias
+• Fixação do cateter à pele com fio inabsorvível
+• Curativo oclusivo estéril
+• Solicitado radiografia de tórax para confirmação do posicionamento e exclusão de pneumotórax`,
+
+            acesso_venoso_jugular: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: ACESSO VENOSO CENTRAL - VEIA JUGULAR INTERNA
+
+DESCRIÇÃO:
+
+• Sob anestesia local com sedação consciente
+• Paciente em decúbito dorsal horizontal com coxim subescapular e Trendelenburg de 15 graus
+• Cabeça rodada para o lado contralateral
+• Assepsia e antissepsia da região cervical lateral e colocação de campos estéreis
+• Identificação dos pontos de referência anatômicos: músculo esternocleidomastóideo, artéria carótida e veia jugular interna
+• Infiltração anestésica local
+• Punção pela técnica de Seldinger com abordagem anterior ou posterior ao músculo esternocleidomastóideo, preferencialmente guiada por ultrassonografia
+• Introdução da agulha em direção ao mamilo ipsilateral, em ângulo de 30-45 graus com a pele
+• Confirmação do acesso venoso pela aspiração de sangue
+• Introdução do fio-guia através da agulha
+• Retirada da agulha mantendo o fio-guia
+• Pequena incisão de pele
+• Dilatação do trajeto
+• Introdução do cateter venoso central sobre o fio-guia
+• Retirada do fio-guia
+• Confirmação do posicionamento pela aspiração de sangue em todas as vias
+• Fixação do cateter à pele com fio inabsorvível
+• Curativo oclusivo estéril
+• Solicitado radiografia de tórax para confirmação`,
+
+            traqueostomia: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: TRAQUEOSTOMIA
+
+DESCRIÇÃO:
+
+• Sob anestesia geral, paciente em decúbito dorsal horizontal
+• Coxim subescapular e hiperextensão cervical
+• Assepsia e antissepsia da região cervical anterior e colocação de campos estéreis
+• Incisão cervical transversa (ou vertical) a aproximadamente dois dedos acima da fúrcula esternal
+• Dissecção por planos com divulsão da linha média entre os músculos pré-tireoidianos
+• Identificação e afastamento lateral do istmo da tireoide (ou secção com ligadura quando necessário)
+• Exposição dos anéis traqueais (2º ao 4º)
+• Hemostasia cuidadosa
+• Abertura da traqueia entre o 2º e 3º anéis traqueais (ou 3º e 4º)
+• Incisão em formato de 'U' invertido, janela ou ressecção parcial do anel conforme técnica preferida
+• Aspiração de secreções traqueais
+• Redução da pressão do cuff do tubo orotraqueal pelo anestesista e recuo do tubo
+• Introdução da cânula de traqueostomia de tamanho adequado
+• Insuflação do cuff e confirmação da ventilação
+• Retirada do tubo orotraqueal
+• Fixação da cânula com cadarço ao redor do pescoço e pontos à pele quando necessário
+• Curativo estéril`,
+
+            desbridamento: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: DESBRIDAMENTO CIRÚRGICO
+
+DESCRIÇÃO:
+
+• Sob anestesia (geral, regional ou local conforme extensão da lesão)
+• Paciente posicionado conforme topografia da ferida
+• Assepsia e antissepsia ampla da região e colocação de campos estéreis
+• Avaliação da extensão e profundidade da ferida
+• Irrigação abundante da ferida com solução salina morna
+• Identificação e remoção de todo tecido desvitalizado, necrótico, fibrina, corpos estranhos e material infectado utilizando bisturi, tesoura e cureta
+• Desbridamento realizado até atingir tecido viável, caracterizado por sangramento ativo, coloração adequada e textura apropriada
+• Exploração de trajetos fistulosos e tunelizações quando presentes
+• Ampliação das bordas da ferida quando necessário para drenagem adequada
+• Revisão da hemostasia
+• Coleta de material para cultura quando indicado
+• Irrigação final abundante da ferida
+• Avaliação da necessidade de terapia por pressão negativa (VAC)
+• Curativo com cobertura adequada conforme características da ferida (hidrofibra, alginato, carvão ativado, etc.)
+• Planejamento de desbridamentos seriados quando indicado`,
+
+            gastrostomia_stamm: `CIRURGIÃO: DR(A)
+AUXILIAR: DR(A)
+ANESTESISTA: DR(A)
+
+PROCEDIMENTO: GASTROSTOMIA À STAMM
+
+DESCRIÇÃO:
+
+• Sob anestesia geral, paciente em decúbito dorsal horizontal
+• Assepsia e antissepsia do abdome e colocação de campos estéreis
+• Incisão mediana supraumbilical (ou subcostal esquerda) com aproximadamente 5-6 cm de extensão
+• Abertura da cavidade abdominal por planos
+• Identificação e exteriorização da parede anterior do estômago
+• Escolha do local de implantação da sonda na parede anterior do corpo gástrico, em área avascular
+• Confecção de duas suturas em bolsa concêntricas com fio absorvível, sem incluir a mucosa
+• Pequena gastrotomia no centro da sutura interna
+• Introdução da sonda de gastrostomia (Foley ou específica) através da gastrotomia
+• Insuflação do balão da sonda com água destilada
+• Fechamento da primeira sutura em bolsa
+• Fechamento da segunda sutura em bolsa, invaginando a primeira e criando um túnel seromuscular (técnica de Witzel opcional)
+• Exteriorização da sonda através de contra-abertura na parede abdominal anterior, em região de hipocôndrio ou flanco esquerdo
+• Fixação da parede gástrica ao peritônio parietal com pontos separados (gastropexia)
+• Revisão da hemostasia e contagem de compressas
+• Fechamento da parede abdominal por planos
+• Fixação da sonda à pele
+• Curativo estéril`
+        };
+
+        function exibirDescricaoCirurgica() {
+            const select = document.getElementById('descricaoCirurgicaSelect');
+            const container = document.getElementById('descricaoCirurgicaContainer');
+            const texto = document.getElementById('descricaoCirurgicaTexto');
+            
+            if (select.value && descricoesCirurgicas[select.value]) {
+                texto.textContent = descricoesCirurgicas[select.value];
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                texto.textContent = '';
+            }
+        }
+
+        function copiarDescricaoCirurgica() {
+            const texto = document.getElementById('descricaoCirurgicaTexto').textContent;
+            
+            if (texto) {
+                navigator.clipboard.writeText(texto).then(() => {
+                    // Feedback visual
+                    const btn = event.target.closest('button');
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg> Copiado!';
+                    btn.style.backgroundColor = '#16a34a';
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.style.backgroundColor = '';
+                    }, 2000);
+                }).catch(err => {
+                    alert('Erro ao copiar. Por favor, selecione o texto manualmente.');
+                });
+            }
         }
 
         function imprimirDocumento() {
