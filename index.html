@@ -1066,7 +1066,7 @@
         
         <div class="system-info">
             SGDM v2.0 | Hospital e Pronto Socorro Municipal de Cuiabá<br>
-            © 2025 Secretaria Municipal de Saúde
+            © 2026 Cirurgia Geral
         </div>
     </div>
 
@@ -1135,7 +1135,7 @@
                 
                 <div class="nav-item" data-tab="descricoes_cirurgicas" onclick="mostrarDocumento('descricoes_cirurgicas')">
                     <svg viewBox="0 0 24 24"><path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm1 13.5l-1-1 3-3-3-3 1-1 4 4-4 4z"/></svg>
-                    <span>Descrições Cirúrgicas</span>
+                    <span>Desc. Cirurgias/Evolução</span>
                 </div>
                 
                 <div class="nav-item" data-tab="outros" onclick="mostrarDocumento('outros')">
@@ -1557,7 +1557,7 @@ FERRITINA.</textarea>
                     </div>
                 </div>
 
-                <!-- Descrições Cirúrgicas -->
+                <!-- Descrições Cirúrgicas e Evoluções -->
                 <div class="form-container" id="descricoesCirurgicasForm">
                     <div class="form-card">
                         <div class="form-card-title">
@@ -1589,9 +1589,36 @@ FERRITINA.</textarea>
                             <label>Descrição do Procedimento</label>
                             <div class="descricao-cirurgica-box">
                                 <div id="descricaoCirurgicaTexto" class="descricao-cirurgica-texto"></div>
-                                <button type="button" class="btn btn-primary" onclick="copiarDescricaoCirurgica()" style="margin-top: 15px;">
+                                <button type="button" class="btn btn-primary" id="btnCopiarDescricao" onclick="copiarTexto('descricaoCirurgicaTexto', this)" style="margin-top: 15px;">
                                     <svg viewBox="0 0 24 24" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/></svg>
                                     Copiar Descrição
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card" style="margin-top: 20px;">
+                        <div class="form-card-title">
+                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H6v-2h4V7h2v4h4v2h-4v4z"/></svg>
+                            Evoluções Médicas Padronizadas
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="evolucaoMedicaSelect">Selecione a Evolução</label>
+                                <select id="evolucaoMedicaSelect" onchange="exibirEvolucaoMedica()">
+                                    <option value="">Selecione uma evolução...</option>
+                                    <option value="evolucao_masculino">Evolução 1º PO - Masculino</option>
+                                    <option value="evolucao_feminino">Evolução 1º PO - Feminino</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width" id="evolucaoMedicaContainer" style="display: none;">
+                            <label>Texto da Evolução</label>
+                            <div class="descricao-cirurgica-box">
+                                <div id="evolucaoMedicaTexto" class="descricao-cirurgica-texto"></div>
+                                <button type="button" class="btn btn-primary" id="btnCopiarEvolucao" onclick="copiarTexto('evolucaoMedicaTexto', this)" style="margin-top: 15px;">
+                                    <svg viewBox="0 0 24 24" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/></svg>
+                                    Copiar Evolução
                                 </button>
                             </div>
                         </div>
@@ -1834,7 +1861,7 @@ CID: Z00`
                 'relatorio': 'Relatório Médico',
                 'solicitacao_exames': 'Solicitação de Exames',
                 'orientacoes': 'Orientações',
-                'descricoes_cirurgicas': 'Descrições Cirúrgicas',
+                'descricoes_cirurgicas': 'Desc. Cirurgias/Evolução',
                 'outros': 'Outros Documentos'
             };
             document.getElementById('headerTitle').textContent = titles[tipo] || 'Documento';
@@ -2520,6 +2547,39 @@ DESCRIÇÃO:
 • Curativo estéril`
         };
 
+        // Evoluções Médicas Padronizadas
+        const evolucoesMedicas = {
+            evolucao_masculino: `1º PO 
+
+PACIENTE EM LEITO DE ENFERMARIA, DEAMBULANDO, ACEITANDO A DIETA OFERTADA, DIURESE ESPONTANEA, ELIMINANDO FLATOS, SEM QUEIXAS DE NÁUSEAS, VÔMITOS, FEBRE OU DOR ABDOMINAL. 
+
+BEG, CORADO, HIDRATADO, ACIANÓTICO, AFEBRIL, ANICTERICO, SINAIS VITAIS NO PERÍODO ESTAVEL
+ABDOME NORMOTENSO, FLACIDO, LEVEMENTE DOLOROSO, SEM SINAIS DE IRRITAÇÃO PERITONEAL. 
+FO EM BOM ASPECTO, SEM SINAIS FLOGISTICOS OU HEMATOMAS. 
+
+CD:
+ALTA HOSPITALAR
+ORIENTAÇÕES GERAIS
+ORIENTO AGENDAR RETORNO AMBULATORIAL NA RECEPÇÃO DO HOSPITAL PARA O AMBULATÓRIO DE CIR. GERAL EM 10-15 DIAS. 
+ATESTADO MÉDICO
+ORIENTO PROCURAR PRONTO ATENDIMENTO EM CASO DE INTERCORRENCIAS.`,
+
+            evolucao_feminino: `1º PO 
+
+PACIENTE EM LEITO DE ENFERMARIA, DEAMBULANDO, ACEITANDO A DIETA OFERTADA, DIURESE ESPONTANEA, ELIMINANDO FLATOS, SEM QUEIXAS DE NÁUSEAS, VÔMITOS, FEBRE OU DOR ABDOMINAL. 
+
+BEG, CORADA, HIDRATADA, ACIANÓTICA, AFEBRIL, ANICTERICA, SINAIS VITAIS NO PERÍODO ESTAVEL
+ABDOME NORMOTENSO, FLACIDO, LEVEMENTE DOLOROSO, SEM SINAIS DE IRRITAÇÃO PERITONEAL. 
+FO EM BOM ASPECTO, SEM SINAIS FLOGISTICOS OU HEMATOMAS. 
+
+CD:
+ALTA HOSPITALAR
+ORIENTAÇÕES GERAIS
+ORIENTO AGENDAR RETORNO AMBULATORIAL NA RECEPÇÃO DO HOSPITAL PARA O AMBULATÓRIO DE CIR. GERAL EM 10-15 DIAS. 
+ATESTADO MÉDICO
+ORIENTO PROCURAR PRONTO ATENDIMENTO EM CASO DE INTERCORRENCIAS.`
+        };
+
         function exibirDescricaoCirurgica() {
             const select = document.getElementById('descricaoCirurgicaSelect');
             const container = document.getElementById('descricaoCirurgicaContainer');
@@ -2534,24 +2594,50 @@ DESCRIÇÃO:
             }
         }
 
-        function copiarDescricaoCirurgica() {
-            const texto = document.getElementById('descricaoCirurgicaTexto').textContent;
+        function exibirEvolucaoMedica() {
+            const select = document.getElementById('evolucaoMedicaSelect');
+            const container = document.getElementById('evolucaoMedicaContainer');
+            const texto = document.getElementById('evolucaoMedicaTexto');
+            
+            if (select.value && evolucoesMedicas[select.value]) {
+                texto.textContent = evolucoesMedicas[select.value];
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                texto.textContent = '';
+            }
+        }
+
+        function copiarTexto(elementoId, botao) {
+            const texto = document.getElementById(elementoId).textContent;
             
             if (texto) {
-                navigator.clipboard.writeText(texto).then(() => {
+                // Criar textarea temporário para copiar
+                const textArea = document.createElement('textarea');
+                textArea.value = texto;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                textArea.style.top = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
                     // Feedback visual
-                    const btn = event.target.closest('button');
-                    const originalHTML = btn.innerHTML;
-                    btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg> Copiado!';
-                    btn.style.backgroundColor = '#16a34a';
+                    const originalHTML = botao.innerHTML;
+                    botao.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg> Copiado!';
+                    botao.style.backgroundColor = '#16a34a';
                     
                     setTimeout(() => {
-                        btn.innerHTML = originalHTML;
-                        btn.style.backgroundColor = '';
+                        botao.innerHTML = originalHTML;
+                        botao.style.backgroundColor = '';
                     }, 2000);
-                }).catch(err => {
+                } catch (err) {
                     alert('Erro ao copiar. Por favor, selecione o texto manualmente.');
-                });
+                }
+                
+                document.body.removeChild(textArea);
             }
         }
 
